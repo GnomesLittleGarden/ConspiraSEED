@@ -250,7 +250,16 @@
     gap: 1.5rem;
     margin: 2rem 0;
   }
-  
+
+  /* ===== defector path ===== */
+  .path-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
   .mission-card {
     background: rgba(0, 20, 0, 0.5);
     border: 1px solid var(--matrix-dark);
@@ -294,17 +303,72 @@
     color: var(--matrix);
     margin-bottom: 1rem;
   }
-  
+
   .mission-card h3 {
     font-family: 'Share Tech Mono', monospace;
     color: var(--matrix);
     margin: 0.5rem 0;
   }
-  
+
   .mission-card p {
     font-size: 0.9rem;
     margin: 0;
     line-height: 1.4;
+  }
+
+  .path-card {
+    background: rgba(0, 20, 0, 0.5);
+    border: 1px solid var(--matrix-dark);
+    padding: 1.5rem;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .path-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--matrix-dark);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .path-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--matrix-dark);
+    animation: glitch 0.3s steps(2, end);
+  }
+
+  .path-card:hover::after {
+    transform: scaleX(1);
+  }
+
+  .path-card i {
+    font-size: 2.5rem;
+    color: var(--matrix);
+    margin-bottom: 1rem;
+  }
+
+  .path-card h3 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--matrix);
+    margin: 0.5rem 0;
+  }
+
+  .path-card p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0 0 1rem;
   }
 
   /* ===== manifesto section ===== */
@@ -478,6 +542,11 @@
       flex-direction: column;
       align-items: center;
     }
+
+    .path-cards {
+      flex-direction: column;
+      align-items: center;
+    }
     
     input[type="email"] {
       width: 100%;
@@ -623,6 +692,32 @@
         </div>
       </div>
       <p>Tag your operations with <span class="highlight">#Seedspiracy</span> to join the collective resistance gallery.</p>
+    </div>
+
+    <div class="section">
+      <h2>THE DEFECTOR'S PATH</h2>
+      <div class="path-cards">
+        <div class="path-card">
+          <i class="fas fa-syringe"></i>
+          <h3>INOCULATE</h3>
+          <p>First Dose of Truth: Curated "gateway" conspiracies with airtight evidence</p>
+          <a href="/inoculate" class="btn">GET YOUR FIRST DOSE</a>
+        </div>
+
+        <div class="path-card">
+          <i class="fas fa-virus"></i>
+          <h3>PROPAGATE</h3>
+          <p>Become a Carrier: Tools to spread cognitive seeds</p>
+          <a href="/propagate" class="btn">SPREAD THE TRUTH</a>
+        </div>
+
+        <div class="path-card">
+          <i class="fas fa-microscope"></i>
+          <h3>INCUBATE</h3>
+          <p>Anonymous forum for pattern-matching and debunking</p>
+          <a href="/incubate" class="btn">JOIN THE HIVE MIND</a>
+        </div>
+      </div>
     </div>
 
     <div class="section" id="rabbit-hole-section">
