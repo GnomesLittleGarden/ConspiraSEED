@@ -1,0 +1,548 @@
+/* css/map.css - Enhanced Matrix Theme */
+#map {
+    height: 100vh;      /* full-screen */
+    width: 100%;
+    font-family: 'Courier New', monospace;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    background-color: #000;
+    color: #0f0;
+    overflow: hidden;
+  }
+  
+  /* Matrix-style container */
+  .leaflet-container {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  
+  /* Custom popup styling */
+  .leaflet-popup-content-wrapper {
+    background-color: rgba(10, 20, 10, 0.95);
+    color: #00ff00;
+    border: 1px solid #1aff1a;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    border-radius: 4px;
+  }
+  
+  .leaflet-popup-tip {
+    background-color: #1aff1a;
+  }
+  
+  .leaflet-popup-content {
+    margin: 14px;
+    font-family: 'Courier New', monospace;
+    line-height: 1.4;
+  }
+  
+  .hit-popup {
+    min-width: 200px;
+  }
+  
+  .hit-popup strong {
+    color: #00ff00;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  
+  .popup-date {
+    color: #79ff79;
+    font-size: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 5px;
+  }
+  
+  .popup-notes {
+    margin-top: 5px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  /* Controls styling */
+  .leaflet-control-zoom {
+    margin-top: 50px !important;
+    margin-right: 15px !important;
+  }
+  
+  .leaflet-control-zoom a {
+    background-color: rgba(10, 30, 10, 0.85);
+    color: #0f0;
+    border: 1px solid #1aff1a;
+    width: 32px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+    transition: all 0.2s ease;
+  }
+  
+  .leaflet-control-zoom a:hover {
+    background-color: rgba(20, 60, 20, 0.9);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.8);
+  }
+  
+  /* floating dropdown */
+  .city-picker {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 999;
+    padding: 10px 15px;
+    font-size: 16px;
+    background: rgba(10, 30, 10, 0.9);
+    color: #0f0;
+    border: 1px solid #1aff1a;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 220px;
+    transition: all 0.2s ease;
+  }
+  
+  .city-picker:hover, .city-picker:focus {
+    background: rgba(20, 40, 20, 0.95);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+  }
+  
+  /* Form styling */
+  .hit-form {
+    padding: 5px;
+  }
+  
+  .hit-form input,
+  .hit-form textarea,
+  .hit-form select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background-color: rgba(10, 30, 10, 0.8);
+    color: #0f0;
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+  
+  .hit-form input:focus,
+  .hit-form textarea:focus,
+  .hit-form select:focus {
+    border-color: #0f0;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+    background-color: rgba(15, 40, 15, 0.8);
+    outline: none;
+  }
+  
+  .hit-form button, 
+  .delete-hit-btn {
+    width: 100%;
+    padding: 8px 10px;
+    background-color: rgba(15, 50, 15, 0.9);
+    color: #0f0;
+    border: 1px solid #1aff1a;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    font-size: 14px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  }
+  
+  .hit-form button:hover,
+  .delete-hit-btn:hover {
+    background-color: rgba(20, 70, 20, 0.95);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+  }
+  
+  .delete-hit-btn {
+    background-color: rgba(50, 15, 15, 0.9);
+    border-color: #ff3a3a;
+    color: #ff3a3a;
+    margin-top: 5px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+  
+  .delete-hit-btn:hover {
+    background-color: rgba(70, 20, 20, 0.95);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+  }
+  
+  /* Matrix digital rain effect (subtle background) */
+  .matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    z-index: 0;
+  }
+  
+  /* Map attribution */
+  .leaflet-control-attribution {
+    background-color: rgba(10, 20, 10, 0.8) !important;
+    color: #0f0 !important;
+    font-family: 'Courier New', monospace;
+    padding: 4px 8px !important;
+    border-top-left-radius: 4px;
+  }
+  
+  .leaflet-control-attribution a {
+    color: #66ff66 !important;
+  }
+  
+  /* Icon styling */
+  .pulse-icon {
+    animation: pulse 2s infinite;
+  }
+  
+  .confirmed-icon {
+    animation: confirmed-pulse 2s infinite;
+  }
+  
+  .danger-icon {
+    animation: danger-pulse 1.5s infinite;
+  }
+  
+  .breach-icon {
+    animation: breach-pulse 2.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { filter: drop-shadow(0 0 2px rgba(255, 255, 0, 0.7)); }
+    50% { filter: drop-shadow(0 0 6px rgba(255, 255, 0, 0.9)); }
+    100% { filter: drop-shadow(0 0 2px rgba(255, 255, 0, 0.7)); }
+  }
+  
+  @keyframes confirmed-pulse {
+    0% { filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.7)); }
+    50% { filter: drop-shadow(0 0 8px rgba(0, 255, 0, 0.9)); }
+    100% { filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.7)); }
+  }
+  
+  @keyframes danger-pulse {
+    0% { filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.7)); }
+    50% { filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.9)); }
+    100% { filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.7)); }
+  }
+  
+  @keyframes breach-pulse {
+    0% { filter: drop-shadow(0 0 2px rgba(128, 0, 255, 0.7)); }
+    50% { filter: drop-shadow(0 0 8px rgba(128, 0, 255, 0.9)); }
+    100% { filter: drop-shadow(0 0 2px rgba(128, 0, 255, 0.7)); }
+  }
+  
+  /* Matrix Legend */
+  .matrix-legend {
+    background-color: rgba(10, 30, 10, 0.85);
+    color: #0f0;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border: 1px solid #1aff1a;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .legend-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 5px;
+  }
+  
+  .legend-item {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+  }
+  
+  .legend-color {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  }
+  
+  .legend-color.potential {
+    background-color: rgba(255, 255, 0, 0.7);
+    box-shadow: 0 0 5px rgba(255, 255, 0, 0.8);
+  }
+  
+  .legend-color.confirmed {
+    background-color: rgba(0, 255, 0, 0.7);
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.8);
+  }
+  
+  .legend-color.danger {
+    background-color: rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+  }
+  
+  .legend-color.breach {
+    background-color: rgba(128, 0, 255, 0.7);
+    box-shadow: 0 0 5px rgba(128, 0, 255, 0.8);
+  }
+  
+  .legend-help {
+    margin-top: 8px;
+    font-size: 11px;
+    text-align: center;
+    color: rgba(0, 255, 0, 0.8);
+    padding-top: 5px;
+    border-top: 1px solid rgba(0, 255, 0, 0.3);
+  }
+  
+  /* Area information panel */
+  .area-panel {
+    background-color: rgba(10, 30, 10, 0.85);
+    color: #0f0;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #1aff1a;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    margin-left: 15px;
+    margin-top: 15px;
+    max-width: 300px;
+  }
+  
+  .area-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 16px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 5px;
+  }
+  
+  .area-description {
+    margin-bottom: 10px;
+    font-size: 14px;
+    text-align: center;
+    font-style: italic;
+    color: rgba(0, 255, 0, 0.9);
+  }
+  
+  .area-stats {
+    font-size: 13px;
+    color: #66ff66;
+  }
+  
+  .area-stats div {
+    margin: 5px 0;
+  }
+  
+  /* Status panel */
+  .status-panel {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 999;
+    background-color: rgba(10, 30, 10, 0.85);
+    color: #0f0;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #1aff1a;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    width: 210px;
+  }
+  
+  .status-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 5px;
+  }
+  
+  .status-row {
+    margin: 7px 0;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .status-value {
+    color: #66ff66;
+    font-weight: bold;
+    text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+  }
+  
+  /* Delete confirmation dialog */
+  .delete-confirmation {
+    position: fixed;
+    z-index: 9999;
+    background-color: rgba(10, 30, 10, 0.95);
+    border: 2px solid #ff3a3a;
+    border-radius: 4px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .delete-message {
+    color: #ff3a3a;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+  
+  .delete-location {
+    color: #0f0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+  }
+  
+  .delete-buttons {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .confirm-delete, .cancel-delete {
+    padding: 8px 15px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+  
+  .confirm-delete {
+    background-color: rgba(50, 15, 15, 0.9);
+    border: 1px solid #ff3a3a;
+    color: #ff3a3a;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+  
+  .confirm-delete:hover {
+    background-color: rgba(70, 20, 20, 0.95);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+  }
+  
+  .cancel-delete {
+    background-color: rgba(15, 50, 15, 0.9);
+    border: 1px solid #1aff1a;
+    color: #0f0;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  }
+  
+  .cancel-delete:hover {
+    background-color: rgba(20, 70, 20, 0.95);
+    box-shadow: 0 0 12px rgba(0, 255, 0, 0.7);
+  }
+  
+  /* Matrix message popup */
+  .matrix-message {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(10, 30, 10, 0.9);
+    color: #0f0;
+    padding: 12px 25px;
+    border-radius: 4px;
+    border: 1px solid #1aff1a;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+    z-index: 9999;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    transition: opacity 0.5s ease;
+    opacity: 1;
+  }
+  
+  
+  
+  /* Custom marker styling */
+  .leaflet-marker-icon {
+    transition: transform 0.2s ease;
+  }
+  
+  .leaflet-marker-icon:hover {
+    transform: scale(1.2);
+    z-index: 1000 !important;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .city-picker {
+      width: 180px;
+      font-size: 14px;
+    }
+    
+    .status-panel {
+      width: 180px;
+      padding: 10px;
+    }
+    
+    .area-panel {
+      max-width: 250px;
+    }
+    
+    .matrix-legend {
+      padding: 8px 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .city-picker {
+      width: 140px;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+    
+    .status-panel {
+      width: 140px;
+      padding: 8px;
+      font-size: 12px;
+    }
+    
+    
+  }

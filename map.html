@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEEDSPIRACY | Tactical Target Map</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Map custom CSS -->
+  <link rel="stylesheet" href="css/map.css" />
+
+  <style>
+    /* Quick link back to home - moved to top-right corner */
+    .home-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999; /* Increased z-index to ensure it's above all other elements */
+      padding: 10px 15px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff66;
+      color: #00ff66;
+      text-decoration: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 14px;
+      box-shadow: 0 0 5px rgba(0, 255, 102, 0.3);
+    }
+
+    .home-link:hover {
+      background: rgba(0, 0, 0, 0.9);
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.7), 0 0 5px #00ff66;
+      text-shadow: 0 0 5px #00ff66;
+    }
+
+    /* Make map full screen */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+    
+    /* Additional styles to ensure panels don't overlap with the home button */
+    .matrix-legend, .area-panel, .status-panel {
+      margin-top: 60px; /* Ensure no overlap with the home button */
+    }
+    
+    /* Custom styling for leaflet controls to avoid overlaps */
+    .leaflet-top.leaflet-right {
+      top: 70px; /* Push down any leaflet controls that might appear in top-right */
+    }
+  </style>
+</head>
+<body>
+  <!-- Link back to home - moved to top-right -->
+  <a href="index.html" class="home-link">
+    <i class="fas fa-arrow-left"></i> Return to Matrix
+  </a>
+
+  <!-- Map container -->
+  <div id="map"></div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/hits.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

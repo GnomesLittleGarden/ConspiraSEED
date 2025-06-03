@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEEDSPIRACY | Digital Guerrillas, Physical Chaos</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+  <style>
+  /* ===== global tokens ===== */
+  :root{ 
+    --matrix: #00ff66; 
+    --matrix-dim: rgba(0, 255, 102, 0.7);
+    --matrix-dark: rgba(0, 255, 102, 0.3);
+  }
+
+  /* ===== Pill Choice Overlay ===== */
+  #pill-choice-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.97); /* Darker, more immersive */
+    display: flex;
+    flex-direction: column; /* Align content vertically */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    text-align: center;
+  }
+  #pill-choice-content {
+    padding: 2rem;
+    border: 1px solid var(--matrix-dark);
+    background: rgba(0, 10, 0, 0.85);
+    max-width: 700px; /* Wider for more text */
+    box-shadow: 0 0 20px var(--matrix-dark);
+  }
+  #pill-choice-content h2 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--matrix);
+    font-size: 2rem; /* Larger heading */
+    margin-top: 0;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 6px var(--matrix);
+  }
+  #pill-choice-content p {
+    color: #ccc; /* Lighter gray for readability */
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  #red-pill-btn, #blue-pill-btn {
+    padding: 1rem 2rem; /* Larger buttons */
+    font-size: 1.1rem;
+    margin: 0.5rem 1rem; /* More spacing */
+    min-width: 220px; /* Ensure buttons have good width */
+    line-height: 1.3;
+  }
+  #red-pill-btn {
+    background-color: #900; 
+    border-color: #700; /* Slightly brighter border for red */
+    color: #fff;
+  }
+  #red-pill-btn:hover {
+    background-color: #c00;
+    border-color: #900;
+    box-shadow: 0 0 10px #f00, 0 0 20px #f00;
+    color: #fff; 
+  }
+  #blue-pill-btn {
+    background-color: #006; 
+    border-color: #004; /* Slightly brighter border for blue */
+    color: #fff;
+  }
+  #blue-pill-btn:hover {
+    background-color: #009;
+    border-color: #006;
+    box-shadow: 0 0 10px #00f, 0 0 20px #00f;
+    color: #fff; 
+  }
+  #blue-pill-message {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 10, 15, 0.95); /* Dark, slightly bluish gray */
+    border: 1px solid #2c3e50; /* Desaturated blue border */
+    padding: 2rem; /* More padding */
+    z-index: 1999; 
+    max-width: 550px;
+    width: 90%;
+    color: #95a5a6; /* Desaturated cyan text */
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  }
+  #blue-pill-message h2 {
+    font-family: 'Share Tech Mono', monospace;
+    color: #bdc3c7; /* Lighter gray for heading */
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+   #blue-pill-message p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Sterile Mode Styles */
+  .wrapper.sterile-mode {
+    filter: grayscale(100%) opacity(0.5);
+    pointer-events: none; 
+  }
+  #matrix.sterile-mode {
+    filter: grayscale(100%) opacity(0.3);
+  }
+
+  /* ===== layout ===== */
+  * {box-sizing: border-box;}
+  html, body {margin: 0; min-height: 100%;}
+  body {
+    background: #000;
+    color: #e5e5e5;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow-x: hidden;
+    padding: 2rem 0;
+  }
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    padding: 2rem;
+  }
+
+  /* ===== hero ===== */
+  .hero {
+    margin-bottom: 3rem;
+  }
+  
+  h1 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 3rem;
+    line-height: 1.2;
+    margin: .5rem 0;
+    color: var(--matrix);
+    text-shadow: 0 0 6px var(--matrix);
+  }
+  
+  .subhead {
+    font-size: 1.2rem;
+    margin: .5rem 0 1rem;
+  }
+  
+  .hero-text {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .highlight {
+    color: var(--matrix);
+    font-weight: bold;
+  }
+
+  /* ===== sections ===== */
+  .section {
+    margin: 3rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--matrix-dark);
+    background: rgba(0, 20, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--matrix), transparent);
+    animation: scanline 2s linear infinite;
+  }
+  
+  @keyframes scanline {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .section h2 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--matrix);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0;
+  }
+  
+  .section-intro {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  /* ===== bullet list ===== */
+  ul.features {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 2rem;
+    text-align: left;
+  }
+  ul.features li {
+    margin: 1rem 0;
+    display: flex;
+    align-items: flex-start;
+  }
+  ul.features li::before {
+    content: '▸';
+    color: var(--matrix);
+    margin-right: .6rem;
+    font-size: 1.2rem;
+  }
+  
+  .feature-title {
+    color: var(--matrix);
+    font-family: 'Share Tech Mono', monospace;
+    margin-right: 0.5rem;
+  }
+
+  /* ===== mission tabs ===== */
+  .missions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .mission-card {
+    background: rgba(0, 20, 0, 0.5);
+    border: 1px solid var(--matrix-dark);
+    padding: 1.5rem;
+    width: 220px;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .mission-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--matrix-dark);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  
+  .mission-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--matrix-dark);
+    animation: glitch 0.3s steps(2, end);
+  }
+  
+  .mission-card:hover::after {
+    transform: scaleX(1);
+  }
+  
+  .mission-card i {
+    font-size: 2.5rem;
+    color: var(--matrix);
+    margin-bottom: 1rem;
+  }
+  
+  .mission-card h3 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--matrix);
+    margin: 0.5rem 0;
+  }
+  
+  .mission-card p {
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ===== manifesto section ===== */
+  .manifesto {
+    padding: 2rem;
+    text-align: left;
+    position: relative;
+  }
+  
+  .manifesto p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  .manifesto::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: var(--matrix-dark);
+    left: 0;
+    top: 0;
+  }
+
+  /* ===== forms ===== */
+  form {
+    margin: 2rem 0;
+  }
+  
+  .form-intro {
+    margin-bottom: 1.5rem;
+  }
+  
+  input[type="email"] {
+    padding: .8rem;
+    width: 240px;
+    background: rgba(0, 20, 0, 0.3);
+    border: 1px solid var(--matrix-dark);
+    color: #e5e5e5;
+    font-family: 'Share Tech Mono', monospace;
+    margin-right: .5rem;
+  }
+  
+  input[type="email"]::placeholder {
+    color: rgba(229, 229, 229, 0.5);
+  }
+  
+  input[type="email"]:focus {
+    outline: none;
+    border-color: var(--matrix);
+    box-shadow: 0 0 5px var(--matrix-dark);
+  }
+
+  /* ===== CTA button – Neo style ===== */
+  .btn {
+    background: transparent;
+    border: 2px solid var(--matrix);
+    color: var(--matrix);
+    padding: .8rem 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: bold;
+    letter-spacing: .5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color .3s ease, box-shadow .3s ease;
+  }
+  
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--matrix);
+    opacity: .17;
+    transform: skewX(-45deg);
+    transition: left .4s ease;
+  }
+  
+  .btn:hover::before {
+    left: 200%;
+  }
+  
+  .btn:hover {
+    color: #000;
+    box-shadow: 0 0 8px var(--matrix), 0 0 16px var(--matrix);
+    animation: glitch .3s steps(2, end);
+  }
+
+  /* ===== social links ===== */
+  .social-section {
+    margin-top: 3rem;
+  }
+  
+  .social-section h2 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--matrix);
+    font-size: 1.5rem;
+  }
+  
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  
+  .social-icon {
+    font-size: 1.8rem;
+    color: var(--matrix-dim);
+    transition: all 0.3s ease;
+  }
+  
+  .social-icon:hover {
+    color: var(--matrix);
+    transform: scale(1.2);
+    text-shadow: 0 0 10px var(--matrix);
+  }
+
+  /* ===== footer ===== */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--matrix-dark);
+    font-size: .9rem;
+    color: #555;
+  }
+  
+  .footer-links {
+    margin-top: 1rem;
+  }
+  
+  .footer-links a {
+    color: #555;
+    margin: 0 0.5rem;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-links a:hover {
+    color: var(--matrix-dim);
+  }
+
+  /* ===== canvas overlay ===== */
+  #matrix {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background: transparent;
+  }
+
+  /* ===== glitch keyframes ===== */
+  @keyframes glitch {
+    0%, 100% {clip-path: inset(0)}
+    45% {clip-path: inset(5% 0 40% 0)}
+    50% {clip-path: inset(5% 0 20% 0)}
+    55% {clip-path: inset(5% 0 60% 0)}
+  }
+
+  /* ===== responsive ===== */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2.2rem;
+    }
+    
+    .missions {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    input[type="email"] {
+      width: 100%;
+      margin: 0 0 1rem 0;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  </style>
+</head>
+<body>
+
+  <div id="pill-choice-overlay">
+    <div id="pill-choice-content">
+      <h2>THE CHOICE IS YOURS</h2>
+      <p>The Matrix is a system. That system is our enemy. But when you're inside, you look around, what do you see? The very minds of the people we are trying to save. But until we do, these people are still a part of that system and that makes them our enemy. You have to understand, most of these people are not ready to be unplugged. And many of them are so inert, so hopelessly dependent on the system, that they will fight to protect it.</p>
+      <p>This is your last chance. After this, there is no turning back.</p>
+      <button id="red-pill-btn" class="btn">TAKE THE RED PILL<br><span style="font-size: 0.8em; opacity: 0.8;">Join the Seedspiracy</span></button>
+      <button id="blue-pill-btn" class="btn">TAKE THE BLUE PILL<br><span style="font-size: 0.8em; opacity: 0.8;">Stay in the System</span></button>
+    </div>
+  </div>
+
+  <div id="blue-pill-message">
+    <h2>SYSTEM ONLINE</h2>
+    <p>You have chosen to remain within the parameters of the system. All anomalies have been neutralized. Your compliance is appreciated. The world remains as it was: ordered, predictable, and under control.</p>
+    <p style="font-size:0.9em; opacity: 0.7;">Enjoy your illusion of choice.</p>
+  </div>
+
+  <!-- Matrix rain canvas -->
+  <canvas id="matrix"></canvas>
+
+  <main class="wrapper">
+    <div class="hero">
+      <h1>YOUR IGNORANCE WAS PLANTED.
+      <p class="subhead">Cities waste millions sterilizing soil.<br>
+        <strong>You</strong> can flip the script for spare change.</p>
+      <p class="hero-text">We are digital guerrillas in a concrete jungle. Our mission: replace sterile gray with <span class="highlight">vibrant green</span>. Each seed bomb is an act of rebellion—patient, artistic chaos that breaks through the Matrix of urban control.</p>
+    </div>
+
+    <div class="section">
+      <h2>MISSION BRIEFING</h2>
+      <p class="section-intro">The system has sterilized our environment. Your mission: become an agent of nature and reclaim neglected spaces. Our field manual will train you in the art of guerrilla gardening.</p>
+      
+      <ul class="features">
+        <li><span class="feature-title">TARGET MATRIX</span> — Learn to identify fertile blind-spots in the urban grid. Map sterile zones and exploit surveillance gaps for maximum impact.</li>
+        <li><span class="feature-title">DIY BOMB RECIPES</span> — Master the creation of seed delivery systems using clay, pulp, or charcoal techniques. Customize for different environments and seasons.</li>
+        <li><span class="feature-title">GHOST-WATERING TACTICS</span> — Deploy moisture strategically without detection. Hydrate your seedlings and disappear without leaving evidence.</li>
+        <li><span class="feature-title">90-SECOND GETAWAY</span> — Perfect the art of quick deployment. In and out before anyone notices—your green revolution remains anonymous.</li>
+      </ul>
+
+      <div class="form-intro">
+        <p>Enter the Matrix. Download our tactical field manual and begin your path to becoming an agent of green chaos.</p>
+      </div>
+      
+      <!-- Manual form with proper Netlify redirect -->
+<form name="manual" method="POST" action="/manual.html" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="manual" />
+  <p hidden>
+    <label>Don't fill this out: <input name="bot-field" /></label>
+  </p>
+
+  <input type="email" name="email" placeholder="you@example.com" required />
+  <button class="btn" type="submit">GET THE MANUAL</button>
+</form>
+    </div>
+    
+
+    <div class="section">
+      <h2>TRANSMISSION LOGS</h2>
+      <p class="section-intro">The resistance speaks. Share your seed bombing conspiracy theories or operation logs to join the collective data feed.</p>
+      
+      <div class="form-intro">
+        <p>Upload your intel. Your story becomes part of the hacked grid.</p>
+      </div>
+      
+      <form name="transmission-logs" method="POST" action="/transmission-success" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="transmission-logs" />
+        <p hidden>
+          <label>Don't fill this out: <input name="bot-field" /></label>
+        </p>
+        <input type="email" name="email" placeholder="you@example.com" required />
+        <textarea name="story" placeholder="Share your conspiracy theory or operation log..." style="padding: .8rem; width: 100%; max-width: 500px; height: 100px; background: rgba(0, 20, 0, 0.3); border: 1px solid var(--matrix-dark); color: #e5e5e5; font-family: 'Roboto', sans-serif; margin: 0.5rem 0;" required></textarea>
+        <button class="btn" type="submit">UPLOAD INTEL</button>
+      </form>
+      
+      <div class="transmission-feed" style="margin-top: 2rem; text-align: left; max-height: 200px; overflow-y: auto;">
+        <p style="color: var(--matrix-dim); font-family: 'Share Tech Mono', monospace;">[AWAITING DECRYPTED TRANSMISSIONS...]</p>
+      </div>
+    </div>
+
+    <div class="section manifesto">
+      <h2>THE MANIFESTO</h2>
+      <p>Concrete suffocates. Asphalt burns. Steel reflects heat back into our lungs. We've been programmed to accept this as normal—the sterilization of our environment in the name of order and control.</p>
+      
+      <p>But there's a glitch in the Matrix. Seeds. Tiny packets of rebellion that can transform dead zones into living art through patience and chaos. Each flower that emerges from cracked concrete is proof that the system can be hacked.</p>
+      
+      <p>Seedspiracy isn't just about planting. It's about <span class="highlight">reprogramming reality</span>. It's about seeing the cracks in the concrete as opportunities, not flaws. It's about being the agent of chaos that brings art and life to neglected spaces.</p>
+      
+      <p>This is your wake-up call. The red pill. Will you stay in the sterile comfort of the programmed world, or will you join us in uploading the green? <a href="#hidden-transmission" style="color: var(--matrix-dim); text-decoration: none; border-bottom: 1px dashed var(--matrix);" onclick="document.getElementById('transmission-popup').style.display='block';">Decrypt hidden signal...</a></p>
+    </div>
+    
+    <div class="section">
+      <h2>OPERATIONS</h2>
+      <p class="section-intro">Patient art requires strategic thinking. Choose your mission and make your mark on the Matrix.</p>
+      
+      <div class="missions">
+        <!-- === TACTICAL MAP CARD ======================================= -->
+        <div class="mission-card">
+          <i class="fas fa-map-marked-alt"></i>
+          <h3>TACTICAL&nbsp;MAP</h3>
+          <p>Live grid of confirmed hits, breaches & danger zones.  
+             Upload your ops and watch the matrix light up.</p>
+        
+          <!-- Updated link to map.html -->
+          <a href="map.html" class="btn" style="margin-top:1rem;">VIEW&nbsp;MAP</a>
+        </div>
+        <div class="mission-card">
+          <i class="fas fa-seedling"></i>
+          <h3>SEED BOMBS</h3>
+          <p>Craft delivery systems that break through urban programming. Strategic deployment of floral chaos in dormant zones.</p>
+        </div>
+        
+        <div class="mission-card">
+          <i class="fas fa-map-marked-alt"></i>
+          <h3>TARGET MAPS</h3>
+          <p>Identify and document sterile zones prime for disruption. Create your own neighborhood transformation blueprint.</p>
+        </div>
+        
+        <div class="mission-card">
+          <i class="fas fa-users"></i>
+          <h3>CELL CREATION</h3>
+          <p>Build your local rebel network. Coordinate synchronized operations for maximum visual impact across cities.</p>
+        </div>
+        
+        <div class="mission-card">
+          <i class="fas fa-camera"></i>
+          <h3>DOCUMENT</h3>
+          <p>Chronicle your rebellious art from bomb to bloom. Create before/after evidence of your system disruption.</p>
+        </div>
+      </div>
+      <p>Tag your operations with <span class="highlight">#Seedspiracy</span> to join the collective resistance gallery.</p>
+    </div>
+
+    <div class="section" id="rabbit-hole-section">
+      <h2>RABBIT HOLE</h2>
+      <p class="section-intro">Explore the depths of misinformation. Each link is a new rabbit hole. Choose wisely.</p>
+      <div class="conspiracy-links">
+        <!-- Conspiracy links will be dynamically inserted here by JavaScript -->
+      </div>
+      <button class="btn" id="new-rabbit-hole-btn" style="margin-top: 1rem;">DESCEND FURTHER</button>
+    </div>
+
+    <div class="section">
+      <h2>JOIN THE MOVEMENT</h2>
+      <p class="section-intro">The revolution grows one seed at a time. Your equipment matters.</p>
+      
+      <p>Our DIY Seedbomb Kits contain everything you need to begin your rebellion: native seed mixes, clay compounds, deployment tools, and custom targeting maps—all designed for maximum impact with minimal detection.</p>
+      
+      <div class="form-intro">
+        <p>Pre-register now and be first in line when our limited-edition kits drop. Early agents receive bonus tactical gear.</p>
+      </div>
+      
+      <!-- Waitlist form with JavaScript redirect -->
+<form name="waitlist" method="POST" action="/success" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="waitlist" />
+  <p hidden>
+    <label>Don't fill this out: <input name="bot-field" /></label>
+  </p>
+
+  <input type="email" name="email" placeholder="you@example.com" required />
+  <button class="btn" type="submit">JOIN WAITLIST</button>
+</form>
+    </div>
+    
+    <div class="social-section">
+      <h2>CONNECT WITH THE RESISTANCE</h2>
+      <p>Follow our channels for operation inspiration, target suggestions, and to connect with fellow agents.</p>
+      
+      <div class="social-links">
+        <a href="#" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="#" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
+        <a href="#" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
+      </div>
+      
+      <p>Tag your operations with <span class="highlight">#Seedspiracy</span> to join the collective resistance gallery.</p>
+    </div>
+
+    <footer>
+      <p>© 2025 Seedspiracy.ca · Rebel legally — plant responsibly.</p>
+      <div class="footer-links">
+        <a href="map.html" class="btn" style="margin-top:1rem;">VIEW&nbsp;MAP</a> · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a>
+      </div>
+      
+    </footer>
+  </main>
+
+  <!-- Digital‑rain script - preserved from original site -->
+  <script>
+  document.addEventListener('DOMContentLoaded',()=>{
+
+    const c = document.getElementById('matrix');
+    const ctx = c.getContext('2d');
+    const font = 18;
+    const chars = '10';
+    const trail = 'rgba(0,0,0,0.08)';
+    let cols, drops;
+    let animationInterval;
+
+    function draw() {
+      ctx.fillStyle = trail;
+      ctx.fillRect(0,0,c.width,c.height);
+
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--matrix');
+      ctx.font = font + 'px Share Tech Mono';
+
+      drops.forEach((y,i)=>{
+        ctx.fillText(chars[Math.random()<.5?0:1], i*font, y*font);
+        if(y*font > c.height) drops[i] = 0;
+        drops[i]++;
+      });
+    }
+
+    function resize(){
+      c.width = innerWidth;
+      c.height = innerHeight;
+      cols = Math.floor(c.width / font);
+      drops = new Array(cols).fill(1);
+      if (document.visibilityState === 'visible') {
+        draw(); // Redraw immediately on resize if visible
+      }
+    }
+    resize(); addEventListener('resize',resize);
+
+    function startAnimation() {
+      if (!animationInterval) {
+        animationInterval = setInterval(draw, 50);
+      }
+    }
+
+    function stopAnimation() {
+      clearInterval(animationInterval);
+      animationInterval = null;
+    }
+
+    // Start animation initially
+    if (document.visibilityState === 'visible') {
+      startAnimation();
+    }
+
+    // Pause and resume animation based on page visibility
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        // Ensure canvas is sized correctly before starting, in case of resize while hidden
+        resize(); 
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    });
+  });
+  </script>
+  <script>
+    document.querySelector('form[data-netlify]').addEventListener('submit', async (e) => {
+      // Clone the form payload first
+      const formData = new FormData(e.target);
+      const body     = new URLSearchParams(formData).toString();
+    
+      // Fire and forget – don't block the normal Netlify redirect
+      fetch('/.netlify/functions/ingest', {
+        method: 'POST',
+        body,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+    });
+  </script>
+
+  <!-- Transmission Popup -->
+  <div id="transmission-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 10, 0, 0.9); border: 2px solid var(--matrix); padding: 2rem; z-index: 1000; max-width: 500px; text-align: left; box-shadow: 0 0 20px var(--matrix-dark); animation: glitch 0.5s steps(2, end);">
+    <h3 style="font-family: 'Share Tech Mono', monospace; color: var(--matrix); margin-top: 0;">INCOMING TRANSMISSION</h3>
+    <p style="font-family: 'Share Tech Mono', monospace; color: var(--matrix-dim); line-height: 1.5;">AGENT: UNKNOWN<br>SOURCE: DARK GRID<br>MESSAGE: The Seedspiracy grows. Beneath the concrete, roots connect us. Each bloom is a node in the network, a signal against control. Find the cracks. Plant the code. The green will override the gray. More intel awaits the vigilant...</p>
+    <button class="btn" style="margin-top: 1rem;" onclick="document.getElementById('transmission-popup').style.display='none'; document.getElementById('transmission-overlay').style.display='none';">CLOSE SIGNAL</button>
+  </div>
+  <!-- Overlay for popup -->
+  <div id="transmission-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 999;"></div>
+
+  <script>
+    document.querySelectorAll('a[href="#hidden-transmission"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('transmission-popup').style.display = 'block';
+        document.getElementById('transmission-overlay').style.display = 'block';
+      });
+    });
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const pillOverlay = document.getElementById('pill-choice-overlay');
+    const redPillBtn = document.getElementById('red-pill-btn');
+    const bluePillBtn = document.getElementById('blue-pill-btn');
+    const mainWrapper = document.querySelector('.wrapper');
+    const matrixCanvas = document.getElementById('matrix');
+    const bluePillMessage = document.getElementById('blue-pill-message');
+    const body = document.body;
+
+    if (pillOverlay) pillOverlay.style.display = 'flex';
+
+    if(redPillBtn) {
+      redPillBtn.addEventListener('click', () => {
+        if (pillOverlay) pillOverlay.style.display = 'none';
+        body.style.overflow = 'auto';
+      });
+    }
+
+    if(bluePillBtn) {
+      bluePillBtn.addEventListener('click', () => {
+        if (pillOverlay) pillOverlay.style.display = 'none';
+        if (mainWrapper) mainWrapper.classList.add('sterile-mode');
+        if (matrixCanvas) matrixCanvas.classList.add('sterile-mode');
+        if (bluePillMessage) bluePillMessage.style.display = 'block';
+        body.style.overflow = 'auto';
+      });
+    }
+    
+    if (pillOverlay && getComputedStyle(pillOverlay).display !== 'none') {
+        body.style.overflow = 'hidden';
+    }
+
+  });
+  </script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded',()=>{
+
+    // Rabbit Hole Links START
+    const conspiracyLinksContainer = document.querySelector('#rabbit-hole-section .conspiracy-links');
+    const newRabbitHoleBtn = document.getElementById('new-rabbit-hole-btn');
+
+    const conspiracies = [
+      { text: "The Moon Landing Was Faked", url: "https://www.example.com/moon-landing-hoax" },
+      { text: "Flat Earth Theory", url: "https://www.example.com/flat-earth" },
+      { text: "Chemtrails Cover-up", url: "https://www.example.com/chemtrails" },
+      { text: "Birds Aren't Real Movement", url: "https://www.example.com/birds-arent-real" },
+      { text: "AI is Stealing Our Thoughts", url: "https://www.example.com/ai-thought-theft" }
+    ];
+
+    let currentConspiracyIndex = -1;
+
+    function displayRandomConspiracy() {
+      if (!conspiracyLinksContainer) return; // Exit if container not found
+      conspiracyLinksContainer.innerHTML = ''; // Clear previous link
+      
+      let randomIndex;
+      if (conspiracies.length === 0) return; // No conspiracies to show
+      if (conspiracies.length === 1) {
+        randomIndex = 0;
+      } else {
+        do {
+          randomIndex = Math.floor(Math.random() * conspiracies.length);
+        } while (randomIndex === currentConspiracyIndex);
+      }
+      
+      currentConspiracyIndex = randomIndex;
+      const selectedConspiracy = conspiracies[currentConspiracyIndex];
+      
+      const linkElement = document.createElement('a');
+      linkElement.href = selectedConspiracy.url;
+      linkElement.textContent = selectedConspiracy.text;
+      linkElement.classList.add('btn'); 
+      linkElement.style.display = 'block'; 
+      linkElement.style.margin = '0 auto 1rem'; 
+      linkElement.setAttribute('target', '_blank'); 
+
+      conspiracyLinksContainer.appendChild(linkElement);
+    }
+
+    if (newRabbitHoleBtn) { // Check if button exists
+      newRabbitHoleBtn.addEventListener('click', displayRandomConspiracy);
+    }
+    // Rabbit Hole Links END
+
+    // Initial display for Rabbit Hole if container and button exist
+    if (conspiracyLinksContainer && newRabbitHoleBtn) {
+        displayRandomConspiracy();
+    }
+
+    const c = document.getElementById('matrix');
+  });
+  </script>
+</body>
+</html>

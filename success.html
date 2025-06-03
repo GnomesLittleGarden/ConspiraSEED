@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connection Complete | Seedspiracy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <style>
+    :root{ 
+      --matrix: #00ff66; 
+      --matrix-dim: rgba(0, 255, 102, 0.7);
+      --matrix-dark: rgba(0, 255, 102, 0.3);
+    }
+    
+    * {box-sizing: border-box;}
+    html, body {margin: 0; min-height: 100%;}
+    body {
+      background: #000;
+      color: #e5e5e5;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      padding: 2rem;
+      border: 1px solid var(--matrix-dark);
+      background: rgba(0, 20, 0, 0.3);
+    }
+    
+    h1 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin: .5rem 0 1.5rem;
+      color: var(--matrix);
+      text-shadow: 0 0 6px var(--matrix);
+    }
+    
+    p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn {
+      background: transparent;
+      border: 2px solid var(--matrix);
+      color: var(--matrix);
+      padding: .8rem 1.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-weight: bold;
+      letter-spacing: .5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color .3s ease, box-shadow .3s ease;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--matrix);
+      opacity: .17;
+      transform: skewX(-45deg);
+      transition: left .4s ease;
+    }
+    
+    .btn:hover::before {
+      left: 200%;
+    }
+    
+    .btn:hover {
+      color: #fff;
+      box-shadow: 0 0 8px var(--matrix), 0 0 16px var(--matrix);
+    }
+    
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      background: transparent;
+    }
+    
+    .highlight {
+      color: var(--matrix);
+      font-weight: bold;
+    }
+
+    .icon {
+      font-size: 3rem;
+      color: var(--matrix);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Matrix rain canvas -->
+  <canvas id="matrix"></canvas>
+
+  <div class="wrapper">
+    <div class="icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h1>CONNECTION COMPLETE</h1>
+    <p>Your email has been securely added to our network. Welcome to the <span class="highlight">resistance</span>.</p>
+    <p>Watch your inbox for further instructions and tactical updates. We'll contact you soon with your next steps.</p>
+    <p>Remember: Every seed planted is a glitch in the concrete system.</p>
+    <a href="/" class="btn">RETURN TO HOMEPAGE</a>
+  </div>
+
+  <!-- Digital rain script -->
+  <script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    const c = document.getElementById('matrix');
+    const ctx = c.getContext('2d');
+    const font = 18;
+    const chars = '10';
+    const trail = 'rgba(0,0,0,0.08)';
+    let cols, drops;
+
+    function resize(){
+      c.width = innerWidth;
+      c.height = innerHeight;
+      cols = Math.floor(c.width / font);
+      drops = new Array(cols).fill(1);
+    }
+    resize(); addEventListener('resize',resize);
+
+    setInterval(()=>{
+      ctx.fillStyle = trail;
+      ctx.fillRect(0,0,c.width,c.height);
+
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--matrix');
+      ctx.font = font + 'px Share Tech Mono';
+
+      drops.forEach((y,i)=>{
+        ctx.fillText(chars[Math.random()<.5?0:1], i*font, y*font);
+        if(y*font > c.height) drops[i] = 0;
+        drops[i]++;
+      });
+    },50);
+  });
+  </script>
+</body>
+</html>
